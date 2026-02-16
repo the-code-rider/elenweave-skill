@@ -1,12 +1,12 @@
 ---
 name: elenweave
-description: Manage Elenweave boards through the local REST API and build rich visual explanations. Use when asked to create a board, create a board from node and edge data, rename or update a board, append nodes and edges, inspect board API responses, explain how code works visually, summarize recent commits as a diagram, or present an implementation plan as an explorable board.
+description: Manage Elenweave project-scoped boards and assets through the local REST API and build rich visual explanations. Use when asked to create/reuse projects, create or update boards from node/edge data, append nodes and edges, upload or reference media assets, inspect API responses, explain code visually, summarize commits as diagrams, or present implementation plans as explorable boards.
 ---
 
 # Elenweave
 
 ## Overview
-Use this skill to perform project-scoped board operations against the local Elenweave server (`server/index.js`).
+Use this skill to perform project-scoped board and asset operations against the local Elenweave server (`server/index.js`).
 
 ## URL Resolution
 Resolve the API base URL in this order:
@@ -37,6 +37,9 @@ When reporting commands, include the resolved base URL explicitly.
 - `PUT /api/projects/:projectId/boards/:boardId`
 - `DELETE /api/projects/:projectId/boards/:boardId`
 - `POST /api/projects/:projectId/boards/:boardId/nodes`
+- `POST /api/projects/:projectId/assets`
+- `GET /api/projects/:projectId/assets/:assetId`
+- `DELETE /api/projects/:projectId/assets/:assetId`
 
 ## Project Strategy (Repo + Scenario)
 Create or reuse one project per repository per broad scenario.
@@ -63,6 +66,11 @@ Create or reuse one project per repository per broad scenario.
 - Replace board state: `PUT /api/projects/:projectId/boards/:boardId` with full payload.
 - Append incrementally: `POST /api/projects/:projectId/boards/:boardId/nodes` with `nodes` and `edges` arrays.
 
+### Attach media assets (server mode)
+- Upload asset bytes with `POST /api/projects/:projectId/assets` using `{ filename, mimeType, base64, category? }`.
+- Use returned `asset.id`/`asset.url` for media node references.
+- Delete unused assets via `DELETE /api/projects/:projectId/assets/:assetId` when asked.
+
 ## Rich Diagram Composition
 Use component combinations to make explanations scannable, visual, and decision-ready.
 
@@ -87,7 +95,9 @@ Use component combinations to make explanations scannable, visual, and decision-
 ## Guardrails
 - Expect `404` (`ProjectNotFound` or `BoardNotFound`) for unknown ids.
 - Expect `400` (`InvalidRequest`) for invalid ids or malformed JSON bodies.
+- Expect `403` (`ReadOnlySeed`) for mutating calls when seeded read-only mode is active.
 - Prefer `PUT` when deterministic full-state updates are required.
 - Prefer `POST /nodes` when only adding graph elements.
+- `PUT /api/projects/:projectId/boards/:boardId` accepts either raw board payload or `{ "board": { ... } }`.
 - Keep node IDs unique and stable during append operations.
-- For API-created images, provide `data.src` as an accessible URL. Browser-local `assetId` flows are app-side only.
+- For API-created media nodes, prefer server asset URLs (`/api/projects/:projectId/assets/:assetId`) over browser-local blob URLs.

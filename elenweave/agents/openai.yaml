@@ -1,4 +1,4 @@
-interface:
+﻿interface:
   display_name: "Elenweave"
-  short_description: "Create and update project-scoped Elenweave boards with rich visual explanations via REST endpoints."
-  default_prompt: "Resolve base URL from user input, then ELENWEAVE_BASE_URL, then http://127.0.0.1:8787. Ensure a project exists per repo and broad scenario, then use project-scoped APIs to create/update boards. Build explanations with CodeSnippet, MarkdownBlock, MermaidBlock, SvgBlock, and ImageViewer for code behavior, recent commits, and implementation plans."
+  short_description: "Create/update project-scoped Elenweave boards and assets with rich visual explanations via REST endpoints."
+  default_prompt: "Resolve base URL from user input, then ELENWEAVE_BASE_URL, then http://127.0.0.1:8787. Ensure a project exists per repo and broad scenario, then use project-scoped APIs to create/update boards and upload/read/delete assets as needed for media nodes. Handle 403 ReadOnlySeed gracefully for mutation calls. Build explanations with CodeSnippet, MarkdownBlock, MermaidBlock, SvgBlock, and ImageViewer for code behavior, commits, and implementation plans."

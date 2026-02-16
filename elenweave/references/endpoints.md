@@ -1,4 +1,4 @@
-# Elenweave Board API Reference
+﻿# Elenweave Board API Reference
 
 Resolve base URL in this order:
 1. User-specified URL
@@ -71,7 +71,7 @@ Request:
 ### `PUT /api/projects/:projectId/boards/:boardId`
 Write full board state.
 
-Request (shape):
+Request (accepted shapes):
 ```json
 {
   "board": {
@@ -83,6 +83,19 @@ Request (shape):
     "edges": [],
     "notifications": []
   }
+}
+```
+
+or raw board payload:
+```json
+{
+  "id": "board_x",
+  "name": "Prompting Flow v2",
+  "meta": null,
+  "nodeOrder": [],
+  "nodes": [],
+  "edges": [],
+  "notifications": []
 }
 ```
 
@@ -100,6 +113,27 @@ Request:
 }
 ```
 
+## Asset Endpoints (Project Scoped)
+
+### `POST /api/projects/:projectId/assets`
+Upload an asset.
+
+Request:
+```json
+{
+  "filename": "diagram.png",
+  "mimeType": "image/png",
+  "category": "image",
+  "base64": "<base64-payload>"
+}
+```
+
+### `GET /api/projects/:projectId/assets/:assetId`
+Read asset bytes (use URL directly in media node `data.src`).
+
+### `DELETE /api/projects/:projectId/assets/:assetId`
+Delete asset metadata + file.
+
 ## Project-First Flow (Repo + Scenario)
 1. Resolve project name as `<repo> - <scenario>`.
 2. `GET /api/projects` and match by name.
@@ -109,7 +143,8 @@ Request:
 
 ## Common Status Codes
 - `200` success (`GET`, `PATCH`, `PUT`, `DELETE`, `POST /nodes`)
-- `201` created (`POST /api/projects`, `POST /api/projects/:projectId/boards`)
+- `201` created (`POST /api/projects`, `POST /api/projects/:projectId/boards`, `POST /api/projects/:projectId/assets`)
 - `400` invalid body or invalid id
-- `404` project, board, or route not found
+- `403` read-only seed mutation blocked (`ReadOnlySeed`)
+- `404` project, board, asset, or route not found
 - `409` lock timeout conflict
